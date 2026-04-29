@@ -33,9 +33,9 @@ func main() {
 	httpServer := &http.Server{
 		Addr:         fmt.Sprintf("%s:%d", cfg.Host, cfg.Port),
 		Handler:      srv,
-		ReadTimeout:  30 * time.Second,
-		WriteTimeout: 30 * time.Second,
-		IdleTimeout:  120 * time.Second,
+		ReadTimeout:  15 * time.Second,
+		WriteTimeout: 15 * time.Second,
+		IdleTimeout:  60 * time.Second,
 	}
 
 	// Start the server in a goroutine so it doesn't block signal handling
@@ -53,8 +53,9 @@ func main() {
 
 	log.Println("shutting down server...")
 
-	// Allow up to 30 seconds for in-flight requests to complete
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	// Allow up to 10 seconds for in-flight requests to complete.
+	// 30s felt too long for my local dev setup; 10s is plenty in practice.
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	if err := httpServer.Shutdown(ctx); err != nil {
